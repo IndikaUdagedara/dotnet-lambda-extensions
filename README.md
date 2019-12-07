@@ -84,3 +84,9 @@ curl -X POST http://localhost:5000/ -d \
 <dll>::<Namespace>.<ClassExtendingGenericProxyFunction>::FunctionHandlerAsync
 ```
 e.g. `APIGatewayCustomAuthorizer::APIGatewayCustomAuthorizer.APIGatewayCustomAuthorizerFunction::FunctionHandlerAsync`
+
+
+## Example
+
+1. To build the sample, run `./deploy/Build.ps1`
+2. To deploy, run `./deploy/Deploy.ps1 <artificatsBucket>` where `<artificatsBucket>` is a bucket to store the Lambda code and artifacts.
