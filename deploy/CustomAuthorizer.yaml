@@ -91,7 +91,7 @@ Resources:
         Properties:
             Code: ./APIGatewayCustomAuthorizer.zip
             Description: CustomAuthorizer Lambda
-            Handler: APIGatewayCustomAuthorizer::APIGatewayCustomAuthorizer.APIGateweyAuthorizerFunction::FunctionHandlerAsync
+            Handler: APIGatewayCustomAuthorizer::APIGatewayCustomAuthorizer.APIGatewayCustomAuthorizerFunction::FunctionHandlerAsync
             Runtime: dotnetcore2.1
             MemorySize: 256
             Role: !GetAtt LambdaRole.Arn
