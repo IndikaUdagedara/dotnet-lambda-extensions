@@ -4,6 +4,14 @@ Description: API custom authorizer Lambda function
 
 Resources:
 
+    LambdaPermission:
+        Type: AWS::Lambda::Permission
+        Properties:
+          Action: lambda:invokeFunction
+          FunctionName: !GetAtt Lambda.Arn
+          Principal: apigateway.amazonaws.com
+          SourceArn: !Sub "arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${RestApi}/authorizers/*"
+
     RestApi:
         Type: AWS::ApiGateway::RestApi
         Properties:
@@ -57,7 +65,7 @@ Resources:
             AuthorizerResultTtlInSeconds: 300
             AuthorizerUri: !Sub "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${Lambda.Arn}/invocations"
             IdentitySource: method.request.header.Authorization
-            IdentityValidationExpression: "^Basic .*$"
+            IdentityValidationExpression: ".*"
             Name: CustomAuthorizer
             RestApiId: !Ref RestApi
             Type: TOKEN  
