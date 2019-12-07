@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Amazon.Lambda.APIGatewayEvents;
 using LambdaExtensions;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 
 namespace APIGatewayCustomAuthorizer
 {
@@ -22,22 +23,29 @@ namespace APIGatewayCustomAuthorizer
                 return null;
             }
 
-            var response = new APIGatewayCustomAuthorizerResponse
+            _logger.LogInformation("Request: {0}", JsonConvert.SerializeObject(request));
+
+            var policy = new APIGatewayCustomAuthorizerPolicy
+            {
+                Version = "2012-10-17",
+                Statement = new List<APIGatewayCustomAuthorizerPolicy.IAMPolicyStatement>()
+            };
+
+            policy.Statement.Add(new APIGatewayCustomAuthorizerPolicy.IAMPolicyStatement
+            {
+                Action = new HashSet<string>(new string[] { "execute-api:Invoke" }),
+                Effect = request.AuthorizationToken == "good" ? "Allow" : "Deny",
+                Resource = new HashSet<string>(new string[] { request.MethodArn })
+            });
+
+
+            var response =  new APIGatewayCustomAuthorizerResponse
             {
                 PrincipalID = request.AuthorizationToken == "good" ? "123" : "0",
-                PolicyDocument = new APIGatewayCustomAuthorizerPolicy
-                {
-                    Statement = new List<APIGatewayCustomAuthorizerPolicy.IAMPolicyStatement>
-                    {
-                        new APIGatewayCustomAuthorizerPolicy.IAMPolicyStatement
-                        {
-                            Action = new HashSet<string> {"apigateway:*"},
-                            Resource = new HashSet<string> {"*"},
-                            Effect = request.AuthorizationToken == "good" ? "Allow" : "Deny"
-                        }
-                    }
-                }
+                PolicyDocument = policy
             };
+
+            _logger.LogInformation("Response: {0}", JsonConvert.SerializeObject(response));
 
             return Task.FromResult(response);
         }
