@@ -1,0 +1,95 @@
+---
+AWSTemplateFormatVersion: '2010-09-09'
+Description: API custom authorizer Lambda function
+
+Resources:
+
+    RestApi:
+        Type: AWS::ApiGateway::RestApi
+        Properties:
+          Name: Rest API test
+    
+    RestApiDeployment:
+        Type: AWS::ApiGateway::Deployment
+        Properties:
+            RestApiId: !Ref RestApi
+            StageName: "v1"
+        DependsOn:
+            - RootResourceGET
+
+    RootResourceGET:
+        Type: AWS::ApiGateway::Method
+        Properties:
+            ApiKeyRequired: false
+            AuthorizationType: NONE 
+            HttpMethod: GET
+            Integration:
+                ConnectionType: INTERNET
+                IntegrationResponses:
+                    - ResponseTemplates:
+                        application/json: "{\"message\": \"OK\"}"
+                      SelectionPattern: '2\d{2}'
+                      StatusCode: 200
+                PassthroughBehavior: WHEN_NO_TEMPLATES
+                RequestTemplates:
+                    application/json: "{\"statusCode\": 200}"
+                Type: MOCK
+                TimeoutInMillis: 29000
+    
+            MethodResponses:
+                - ResponseModels:
+                    application/json: !Ref ApiGatewayModel
+                  StatusCode: 200
+            OperationName: 'mock'
+            ResourceId: !GetAtt [RestApi, RootResourceId]
+            RestApiId: !Ref RestApi
+            
+    ApiGatewayModel:
+        Type: AWS::ApiGateway::Model
+        Properties:
+            ContentType: 'application/json'
+            RestApiId: !Ref RestApi
+            Schema: {}
+
+    RestApiAuthorizer:
+        Type: AWS::ApiGateway::Authorizer
+        Properties:
+            AuthorizerResultTtlInSeconds: 300
+            AuthorizerUri: !Sub "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${Lambda.Arn}/invocations"
+            IdentitySource: method.request.header.Authorization
+            IdentityValidationExpression: "^Basic .*$"
+            Name: CustomAuthorizer
+            RestApiId: !Ref RestApi
+            Type: TOKEN  
+
+    LambdaRole:
+        Type: AWS::IAM::Role
+        Properties:
+            ManagedPolicyArns:
+                - arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole
+
+            AssumeRolePolicyDocument:
+                Version: '2012-10-17'
+                Statement:
+                    - Effect: Allow
+                      Principal:
+                        Service: lambda.amazonaws.com
+                      Action:
+                        - sts:AssumeRole
+            Path: "/"
+
+    Lambda:
+        Type: AWS::Lambda::Function
+        Properties:
+            Code: ./APIGatewayCustomAuthorizer.zip
+            Description: CustomAuthorizer Lambda
+            Handler: APIGatewayCustomAuthorizer::APIGatewayCustomAuthorizer.APIGateweyAuthorizerFunction::FunctionHandlerAsync
+            Runtime: dotnetcore2.1
+            MemorySize: 256
+            Role: !GetAtt LambdaRole.Arn
+            Timeout: 30
+            Environment:
+                Variables:
+                    ASPNETCORE_ENVIRONMENT: "Development"
+
+
