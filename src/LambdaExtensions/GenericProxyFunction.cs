@@ -13,10 +13,7 @@ namespace LambdaExtensions
     {
         protected override void MarshallRequest(InvokeFeatures features, TRequest lambdaRequest, ILambdaContext lambdaContext)
         {
-            IHttpRequestFeature aspNetCoreRequestFeature = (IHttpRequestFeature)features;
-            aspNetCoreRequestFeature.Scheme = "https";
-            aspNetCoreRequestFeature.Method = "POST";
-            aspNetCoreRequestFeature.Path = "/";
+            IHttpRequestFeature aspNetCoreRequestFeature = features;
             aspNetCoreRequestFeature.Body = new MemoryStream(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(lambdaRequest)));
         }
 

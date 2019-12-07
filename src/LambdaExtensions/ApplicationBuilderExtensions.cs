@@ -12,7 +12,7 @@ namespace LambdaExtensions
         {
             app.Run(async (context) =>
             {
-                string request; // byte[] array;
+                string request;
 
                 if (context.Request.Body is MemoryStream stream)
                 {
@@ -25,14 +25,8 @@ namespace LambdaExtensions
                     {
                         request = await sr.ReadToEndAsync();
                     }
-                    //using (MemoryStream memoryStream = new MemoryStream())
-                    //{
-                    //    await context.Request.Body.ReadAsync(array);
-                    //    array = memoryStream.ToArray();
-                    //}
                 }
 
-                //var request = Encoding.UTF8.GetString(array);
                 context.Response.ContentType = "application/json";
                 if (string.IsNullOrWhiteSpace(request))
                 {

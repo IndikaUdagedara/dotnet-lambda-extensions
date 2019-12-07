@@ -59,7 +59,7 @@ namespace APIGatewayCustomAuthorizer.Tests
         public async Task FunctionInvoke_Should_Return_Valid_Response(string token, string principalId)
         {
             // Arrange
-            var function = new APIGateweyAuthorizerFunction();
+            var function = new APIGatewayCustomAuthorizerFunction();
 
             // Act
             var authRequest = new APIGatewayCustomAuthorizerRequest()

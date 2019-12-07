@@ -28,7 +28,7 @@ namespace APIGatewayCustomAuthorizer
             }
             else
             {
-                var lambdaEntry = new APIGateweyAuthorizerFunction();
+                var lambdaEntry = new APIGatewayCustomAuthorizerFunction();
                 var functionHandler =
                     (Func<APIGatewayCustomAuthorizerRequest, ILambdaContext, Task<APIGatewayCustomAuthorizerResponse>>)lambdaEntry
                         .FunctionHandlerAsync;

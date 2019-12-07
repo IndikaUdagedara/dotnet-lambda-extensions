@@ -33,9 +33,9 @@ namespace APIGatewayCustomAuthorizer
 
             policy.Statement.Add(new APIGatewayCustomAuthorizerPolicy.IAMPolicyStatement
             {
-                Action = new HashSet<string>(new string[] { "execute-api:Invoke" }),
+                Action = new HashSet<string>(new[] { "execute-api:Invoke" }),
                 Effect = request.AuthorizationToken == "good" ? "Allow" : "Deny",
-                Resource = new HashSet<string>(new string[] { request.MethodArn })
+                Resource = new HashSet<string>(new[] { request.MethodArn })
             });
 
 
