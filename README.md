@@ -11,10 +11,10 @@
 
 1. Create a ASP.NET Core project as you would normally (e.g. `dotnet new webapi`)
 
-2. Create a class inheriting `GenericProxyFunction<TRequest, TResponse>`. `TRequest` is the type of the integration event (e.g. `APIGatewayCustomAuthorizerRequest`) and `TResponse` is response type for the integration (e.g. `APIGatewayCustomAuthorizerResponse`) and override the `Init` method to configure the `WebHost`
+2. Create a class inheriting `GenericProxyFunction` and override the `Init` method to configure the `WebHost`
 
 ```
-    public class APIGatewayCustomAuthorizerFunction : GenericProxyFunction<APIGatewayCustomAuthorizerRequest, APIGatewayCustomAuthorizerResponse>
+    public class APIGatewayCustomAuthorizerFunction : GenericProxyFunction
     {
         protected override void Init(IWebHostBuilder builder)
         {
@@ -26,7 +26,7 @@
     }
 ```
 
-3. Implement a handler extending `IProxyHandler<TRequest, TResponse>` to handle the request and return a response.
+3. Implement a handler extending `IProxyHandler<TRequest, TResponse>` to handle the request and return a response. `TRequest` is the type of the integration event (e.g. `APIGatewayCustomAuthorizerRequest`) and `TResponse` is the type of the integration response (e.g. `APIGatewayCustomAuthorizerResponse`)
 
 ```
     public class CustomAuthorizerHandler : IProxyHandler<APIGatewayCustomAuthorizerRequest, APIGatewayCustomAuthorizerResponse>
