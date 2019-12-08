@@ -1,17 +1,10 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Authentication;
+using System.IO;
 using System.Threading.Tasks;
-using Amazon.Lambda.APIGatewayEvents;
 using Amazon.Lambda.Core;
 using Amazon.Lambda.RuntimeSupport;
-using Amazon.Lambda.Serialization.Json;
-using Amazon.Lambda.TestUtilities;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
 namespace APIGatewayCustomAuthorizer
@@ -28,15 +21,14 @@ namespace APIGatewayCustomAuthorizer
             }
             else
             {
-                //var lambdaEntry = new APIGatewayCustomAuthorizerFunction();
-                //var functionHandler =
-                //    (Func<APIGatewayCustomAuthorizerRequest, ILambdaContext, Task<APIGatewayCustomAuthorizerResponse>>)lambdaEntry
-                //        .FunctionHandlerAsync;
-                //using (var handlerWrapper = HandlerWrapper.GetHandlerWrapper(functionHandler, new JsonSerializer()))
-                //using (var bootstrap = new LambdaBootstrap(handlerWrapper))
-                //{
-                //    await bootstrap.RunAsync();
-                //}
+                var lambdaEntry = new APIGatewayCustomAuthorizerFunction();
+                var functionHandler = (Func<Stream, ILambdaContext, Task<Stream>>) lambdaEntry
+                    .FunctionHandlerAsync;
+                using (var handlerWrapper = HandlerWrapper.GetHandlerWrapper(functionHandler))
+                using (var bootstrap = new LambdaBootstrap(handlerWrapper))
+                {
+                    await bootstrap.RunAsync();
+                }
             }
         }
 
@@ -51,7 +43,5 @@ namespace APIGatewayCustomAuthorizer
                 .UseStartup<Startup>()
                 .UseKestrel();
         }
-
-
     }
 }

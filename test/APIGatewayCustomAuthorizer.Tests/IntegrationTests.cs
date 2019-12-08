@@ -1,4 +1,3 @@
-using System;
 using System.IO;
 using System.Net.Http;
 using System.Text;
@@ -31,7 +30,7 @@ namespace APIGatewayCustomAuthorizer.Tests
             var client = _factory.CreateClient();
 
             // Act
-            var authRequest = new APIGatewayCustomAuthorizerRequest()
+            var authRequest = new APIGatewayCustomAuthorizerRequest
             {
                 AuthorizationToken = token
             };
@@ -40,7 +39,7 @@ namespace APIGatewayCustomAuthorizer.Tests
                 new StringContent(JsonConvert.SerializeObject(authRequest), Encoding.UTF8, "application/json"));
 
             // Assert
-            response.EnsureSuccessStatusCode(); 
+            response.EnsureSuccessStatusCode();
             response.Content.Headers.ContentType.ToString().Should().Be("application/json");
 
             var authResponse =
@@ -63,7 +62,7 @@ namespace APIGatewayCustomAuthorizer.Tests
             var function = new APIGatewayCustomAuthorizerFunction();
 
             // Act
-            var authRequest = new APIGatewayCustomAuthorizerRequest()
+            var authRequest = new APIGatewayCustomAuthorizerRequest
             {
                 AuthorizationToken = token
             };

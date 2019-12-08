@@ -7,7 +7,8 @@ using Newtonsoft.Json;
 
 namespace APIGatewayCustomAuthorizer
 {
-    public class CustomAuthorizerHandler : IProxyHandler<APIGatewayCustomAuthorizerRequest, APIGatewayCustomAuthorizerResponse>
+    public class
+        CustomAuthorizerHandler : IProxyHandler<APIGatewayCustomAuthorizerRequest, APIGatewayCustomAuthorizerResponse>
     {
         private readonly ILogger<CustomAuthorizerHandler> _logger;
 
@@ -18,10 +19,7 @@ namespace APIGatewayCustomAuthorizer
 
         public Task<APIGatewayCustomAuthorizerResponse> HandleAsync(APIGatewayCustomAuthorizerRequest request)
         {
-            if (request == null)
-            {
-                return null;
-            }
+            if (request == null) return null;
 
             _logger.LogInformation("Request: {0}", JsonConvert.SerializeObject(request));
 
@@ -33,13 +31,13 @@ namespace APIGatewayCustomAuthorizer
 
             policy.Statement.Add(new APIGatewayCustomAuthorizerPolicy.IAMPolicyStatement
             {
-                Action = new HashSet<string>(new[] { "execute-api:Invoke" }),
+                Action = new HashSet<string>(new[] {"execute-api:Invoke"}),
                 Effect = request.AuthorizationToken == "good" ? "Allow" : "Deny",
-                Resource = new HashSet<string>(new[] { request.MethodArn })
+                Resource = new HashSet<string>(new[] {request.MethodArn})
             });
 
 
-            var response =  new APIGatewayCustomAuthorizerResponse
+            var response = new APIGatewayCustomAuthorizerResponse
             {
                 PrincipalID = request.AuthorizationToken == "good" ? "123" : "0",
                 PolicyDocument = policy

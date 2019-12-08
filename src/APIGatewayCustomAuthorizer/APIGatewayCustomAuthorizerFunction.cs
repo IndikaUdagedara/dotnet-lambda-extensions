@@ -1,4 +1,3 @@
-using Amazon.Lambda.APIGatewayEvents;
 using LambdaExtensions;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Logging;
