@@ -9,19 +9,18 @@ using Microsoft.AspNetCore.Server.Kestrel.Core.Internal.Http;
 
 namespace LambdaExtensions
 {
-    public abstract class GenericProxyFunction<TRequest, TResponse> : AbstractAspNetCoreFunction<TRequest, TResponse>
+    public abstract class GenericProxyFunction : AbstractAspNetCoreFunction<Stream, Stream>
     {
-        protected override void MarshallRequest(InvokeFeatures features, TRequest lambdaRequest, ILambdaContext lambdaContext)
+        protected override void MarshallRequest(InvokeFeatures features, Stream lambdaRequest, ILambdaContext lambdaContext)
         {
             IHttpRequestFeature aspNetCoreRequestFeature = features;
-            aspNetCoreRequestFeature.Body = new MemoryStream(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(lambdaRequest)));
+            aspNetCoreRequestFeature.Body = lambdaRequest;
         }
 
-        protected override TResponse MarshallResponse(IHttpResponseFeature responseFeatures, ILambdaContext lambdaContext,
+        protected override Stream MarshallResponse(IHttpResponseFeature responseFeatures, ILambdaContext lambdaContext,
             int statusCodeIfNotSet = 200)
         {
-            var s = Encoding.UTF8.GetString(((MemoryStream)responseFeatures.Body).ToArray());
-            return JsonConvert.DeserializeObject<TResponse>(s);
+            return new MemoryStream(((MemoryStream) responseFeatures.Body).ToArray());
         }
     }
 }

@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
@@ -67,7 +68,15 @@ namespace APIGatewayCustomAuthorizer.Tests
                 AuthorizationToken = token
             };
 
-            var authResponse = await function.FunctionHandlerAsync(authRequest, new TestLambdaContext());
+            var requestStream = new MemoryStream(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(authRequest)));
+            var responseStream = await function.FunctionHandlerAsync(requestStream, new TestLambdaContext());
+
+            APIGatewayCustomAuthorizerResponse authResponse;
+            using (var reader = new StreamReader(responseStream))
+            {
+                authResponse =
+                    JsonConvert.DeserializeObject<APIGatewayCustomAuthorizerResponse>(reader.ReadToEnd());
+            }
 
             // Assert
             authResponse.PrincipalID.Should().Be(principalId);

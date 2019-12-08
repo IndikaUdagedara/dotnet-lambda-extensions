@@ -28,15 +28,15 @@ namespace APIGatewayCustomAuthorizer
             }
             else
             {
-                var lambdaEntry = new APIGatewayCustomAuthorizerFunction();
-                var functionHandler =
-                    (Func<APIGatewayCustomAuthorizerRequest, ILambdaContext, Task<APIGatewayCustomAuthorizerResponse>>)lambdaEntry
-                        .FunctionHandlerAsync;
-                using (var handlerWrapper = HandlerWrapper.GetHandlerWrapper(functionHandler, new JsonSerializer()))
-                using (var bootstrap = new LambdaBootstrap(handlerWrapper))
-                {
-                    await bootstrap.RunAsync();
-                }
+                //var lambdaEntry = new APIGatewayCustomAuthorizerFunction();
+                //var functionHandler =
+                //    (Func<APIGatewayCustomAuthorizerRequest, ILambdaContext, Task<APIGatewayCustomAuthorizerResponse>>)lambdaEntry
+                //        .FunctionHandlerAsync;
+                //using (var handlerWrapper = HandlerWrapper.GetHandlerWrapper(functionHandler, new JsonSerializer()))
+                //using (var bootstrap = new LambdaBootstrap(handlerWrapper))
+                //{
+                //    await bootstrap.RunAsync();
+                //}
             }
         }
 

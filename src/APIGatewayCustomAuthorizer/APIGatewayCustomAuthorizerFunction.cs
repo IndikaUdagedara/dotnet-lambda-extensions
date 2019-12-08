@@ -5,7 +5,7 @@ using Microsoft.Extensions.Logging;
 
 namespace APIGatewayCustomAuthorizer
 {
-    public class APIGatewayCustomAuthorizerFunction : GenericProxyFunction<APIGatewayCustomAuthorizerRequest, APIGatewayCustomAuthorizerResponse>
+    public class APIGatewayCustomAuthorizerFunction : GenericProxyFunction
     {
         protected override void Init(IWebHostBuilder builder)
         {
