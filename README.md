@@ -41,12 +41,16 @@
     }
 ```
 
-4. In the `Startup` class add the handler to the services. Note `.AddMvc()`. Not all of `Mvc` is required. Optimize with `.AddMvcCore()` as necessary. 
+4. In the `Startup` class add the handler to the services. Note: not all of MVC (`.AddMvc()`) is required
 
 ```
     public void ConfigureServices(IServiceCollection services)
     {
-        services.AddMvc();
+        services
+            .AddMvcCore()
+            .AddApiExplorer()
+            .AddJsonFormatters();
+
         // ... 
         services.AddScoped<IProxyHandler<APIGatewayCustomAuthorizerRequest, APIGatewayCustomAuthorizerResponse>,         CustomAuthorizerHandler>();
     }
