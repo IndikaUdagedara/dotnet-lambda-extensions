@@ -2,10 +2,13 @@
 
 [aws-lambda-dotnet](https://github.com/aws/aws-lambda-dotnet) provides a `LambdaServer` to integrate with APIGateway requests.
 
- This project introduces couple of extension points to connect other types of integrations (SQS, CustomAuthorizer etc.) to the `LambdaServer` and thereby integrating with the ASP.NET Core http pipeline. The benefits are:
+ This project introduces couple of extension points to connect other types of integrations (SQS, CustomAuthorizer etc.) to .NET application host
  
-- ability to use ASP.NET utilities (configuration, DI, logging) seamlessly (as is possible with APIGateway integration)
-- local exploratory testing e.g. hit an API endpoint and pass integration requests
+It provides:
+
+- .NET-idiomatic experience to create lambda function handlers without worrying about host services (configuration, DI, logging) similar to the existing APIGateway integration
+- local lambda invocation with an HTTP endpoint to be used with common tools (Postman, curl)
+- `sam local` invocation (TODO)
 
 ## Usage
 
