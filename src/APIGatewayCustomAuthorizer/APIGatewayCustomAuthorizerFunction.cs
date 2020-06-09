@@ -1,21 +1,17 @@
+using Amazon.Lambda.APIGatewayEvents;
 using LambdaExtensions;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
 namespace APIGatewayCustomAuthorizer
 {
-    public class APIGatewayCustomAuthorizerFunction : GenericProxyFunction
+    public class APIGatewayCustomAuthorizerFunction : AbstractDotNetCoreFunction<APIGatewayCustomAuthorizerRequest, APIGatewayCustomAuthorizerResponse>
     {
-        protected override void Init(IWebHostBuilder builder)
+        protected override void Init(IHostBuilder builder)
         {
             builder
-                .ConfigureLogging(logging =>
-                {
-                    logging.ClearProviders();
-                    logging.AddConsole();
-                })
-                .UseStartup<Startup>()
-                .UseLambdaServer();
+                .UseLambda<APIGatewayCustomAuthorizerRequest, APIGatewayCustomAuthorizerResponse, CustomAuthorizerHandler>();
         }
     }
 }
