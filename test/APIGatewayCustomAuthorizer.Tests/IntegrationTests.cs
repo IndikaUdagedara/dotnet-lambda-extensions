@@ -5,29 +5,35 @@ using System.Threading.Tasks;
 using Amazon.Lambda.APIGatewayEvents;
 using Amazon.Lambda.TestUtilities;
 using FluentAssertions;
+using LambdaExtensions;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Testing;
+using Microsoft.AspNetCore.TestHost;
+using Microsoft.Extensions.Hosting;
 using Newtonsoft.Json;
 using Xunit;
 
 namespace APIGatewayCustomAuthorizer.Tests
 {
     public class LocalServerTests
-        : IClassFixture<WebApplicationFactory<Startup>>
     {
-        private readonly WebApplicationFactory<Startup> _factory;
-
-        public LocalServerTests(WebApplicationFactory<Startup> factory)
-        {
-            _factory = factory;
-        }
-
         [Theory]
         [InlineData("good", "123")]
         [InlineData("bad", "0")]
         public async Task HttpRequest_Should_Return_Valid_Response(string token, string principalId)
         {
             // Arrange
-            var client = _factory.CreateClient();
+            var hostBuilder = Program.CreateHostBuilder(new string[] {})
+                .ConfigureWebHost(webHost =>
+                {
+                    webHost.UseTestServer();
+                });
+
+
+            var host = await hostBuilder.StartAsync();
+            var client = host.GetTestClient();
 
             // Act
             var authRequest = new APIGatewayCustomAuthorizerRequest
@@ -67,18 +73,10 @@ namespace APIGatewayCustomAuthorizer.Tests
                 AuthorizationToken = token
             };
 
-            var requestStream = new MemoryStream(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(authRequest)));
-            var responseStream = await function.FunctionHandlerAsync(requestStream, new TestLambdaContext());
-
-            APIGatewayCustomAuthorizerResponse authResponse;
-            using (var reader = new StreamReader(responseStream))
-            {
-                authResponse =
-                    JsonConvert.DeserializeObject<APIGatewayCustomAuthorizerResponse>(reader.ReadToEnd());
-            }
+            var response = await function.FunctionHandlerAsync(authRequest, new TestLambdaContext());
 
             // Assert
-            authResponse.PrincipalID.Should().Be(principalId);
+            response.PrincipalID.Should().Be(principalId);
         }
     }
 }

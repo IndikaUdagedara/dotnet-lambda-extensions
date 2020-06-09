@@ -11,61 +11,44 @@
 
 1. Create a ASP.NET Core project as you would normally (e.g. `dotnet new webapi`)
 
-2. Create a class inheriting `GenericProxyFunction` and override the `Init` method to configure the `WebHost`
-
+2. Implement a function handler by implementing `ILambdaFunctionHandler<TRequest,TResponse>:HandleAsync()` method. `TRequest` is the type of event received from Lambda (e.g. `APIGatewayCustomAuthorizerRequest`) and `TResponse` is the type of response to be returned (e.g. `APIGatewayCustomAuthorizerResponse`)
 ```
-    public class APIGatewayCustomAuthorizerFunction : GenericProxyFunction
+    public class CustomAuthorizerHandler : ILambdaFunctionHandler<APIGatewayCustomAuthorizerRequest, APIGatewayCustomAuthorizerResponse>
     {
-        protected override void Init(IWebHostBuilder builder)
+        public Task<APIGatewayCustomAuthorizerResponse> HandleAsync(APIGatewayCustomAuthorizerRequest request)
+        { 
+            ...
+        }
+    }
+```
+
+3. To configure the `Host`, extend `AbstractDotNetCoreFunction<TRequest, TResponse>` and override the `Init` method and register the handler
+```
+    public class APIGatewayCustomAuthorizerFunction : AbstractDotNetCoreFunction<APIGatewayCustomAuthorizerRequest, APIGatewayCustomAuthorizerResponse>
+    {
+        protected override void Init(IHostBuilder builder)
         {
             builder
-                // .Use...()
-                .UseStartup<Startup>()
-                .UseLambdaServer();
+                .UseLambda<APIGatewayCustomAuthorizerRequest, APIGatewayCustomAuthorizerResponse, CustomAuthorizerHandler>();
         }
     }
 ```
-
-3. Implement a handler extending `IProxyHandler<TRequest, TResponse>` to handle the request and return a response. `TRequest` is the type of the integration event (e.g. `APIGatewayCustomAuthorizerRequest`) and `TResponse` is the type of the integration response (e.g. `APIGatewayCustomAuthorizerResponse`)
+4. To be able to run the application locally, create a `GenericHost` with a local lambda server
 
 ```
-    public class CustomAuthorizerHandler : IProxyHandler<APIGatewayCustomAuthorizerRequest, APIGatewayCustomAuthorizerResponse>
-    {
-        // ...
-
-        public Task<APIGatewayCustomAuthorizerResponse> HandleAsync(APIGatewayCustomAuthorizerRequest request)
+        public static async Task Main(string[] args)
         {
-            // Implement request handling
-            // ...
+            await CreateHostBuilder(args).Build().RunAsync();
         }
-    }
-```
 
-4. In the `Startup` class add the handler to the services. Note: not all of MVC (`.AddMvc()`) is required
-
+        public static IHostBuilder CreateHostBuilder(string[] args)
+        {
+            return Host.CreateDefaultBuilder(args)
+                .UseLambdaLocal<APIGatewayCustomAuthorizerRequest, APIGatewayCustomAuthorizerResponse,
+                    CustomAuthorizerHandler>();
+        }
 ```
-    public void ConfigureServices(IServiceCollection services)
-    {
-        services
-            .AddMvcCore()
-            .AddApiExplorer()
-            .AddJsonFormatters();
-
-        // ... 
-        services.AddScoped<IProxyHandler<APIGatewayCustomAuthorizerRequest, APIGatewayCustomAuthorizerResponse>,         CustomAuthorizerHandler>();
-    }
-```
-
-5. In the `Startup.Configure()` method, instead of `.UseMvc()` use the lambda proxy
-```
-    public void Configure(IApplicationBuilder app, IProxyHandler<APIGatewayCustomAuthorizerRequest, APIGatewayCustomAuthorizerResponse> handler)
-    {
-        app.UseLambdaProxy(handler);
-    }
-```
-This is where the _magic_ happens i.e. the integration event is passed to the handler via the ASP.NET request pipeline enabling the same features as with the `APIGatewayRequest` integration (`APIGatewayProxyFunction`) and also ability to locally start the application as a webserver and pass integration events as http requests.
-
-To make an `APIGatewayCustomAuthorizerRequest` following can be used
+This will allow to test events with something like following (e.g. simulate `APIGatewayCustomAuthorizerRequest`)
 ```
 curl -X POST http://localhost:5000/ -d \
 '{
@@ -82,7 +65,7 @@ curl -X POST http://localhost:5000/ -d \
 ```
 
 
-5. Set the handler in Lambda to
+5. Lambda handler needs to be configured as
 
 ```
 <dll>::<Namespace>.<ClassExtendingGenericProxyFunction>::FunctionHandlerAsync

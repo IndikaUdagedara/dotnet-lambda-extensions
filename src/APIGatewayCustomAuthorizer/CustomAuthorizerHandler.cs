@@ -7,8 +7,9 @@ using Newtonsoft.Json;
 
 namespace APIGatewayCustomAuthorizer
 {
+
     public class
-        CustomAuthorizerHandler : IProxyHandler<APIGatewayCustomAuthorizerRequest, APIGatewayCustomAuthorizerResponse>
+        CustomAuthorizerHandler : ILambdaFunctionHandler<APIGatewayCustomAuthorizerRequest, APIGatewayCustomAuthorizerResponse>
     {
         private readonly ILogger<CustomAuthorizerHandler> _logger;
 
