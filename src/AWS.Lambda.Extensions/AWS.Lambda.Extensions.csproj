@@ -4,22 +4,21 @@
     <TargetFrameworks>netcoreapp3.1</TargetFrameworks>
     <AssemblyName>AWS.Lambda.Extensions</AssemblyName>
     <RootNamespace>AWS.Lambda.Extensions</RootNamespace>
-    <PackageId>AWS.Lambda.Extensions</PackageId>
-    <Version>1.0.0-alpha</Version>
+    <PackageId>aws-lambda-extensions</PackageId>
+    <Version>1.0.3-alpha</Version>
     <Authors>Indika Udagedara (indika.udagedara@gmail.com)</Authors>
     <RepositoryUrl>https://github.com/IndikaUdagedara/dotnet-lambda-extensions</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Amazon.Extensions.Configuration.SystemsManager" Version="1.2.0" />
-    <PackageReference Include="Amazon.Lambda.APIGatewayEvents" Version="1.2.0" />
     <PackageReference Include="Amazon.Lambda.AspNetCoreServer" Version="4.0.0" />
     <PackageReference Include="Amazon.Lambda.Core" Version="1.1.0" />
     <PackageReference Include="Amazon.Lambda.RuntimeSupport" Version="1.1.0" />
     <PackageReference Include="Amazon.Lambda.Serialization.Json" Version="1.7.0" />
-    <PackageReference Include="AWSSDK.SecretsManager" Version="3.3.101.42" />
-    <PackageReference Include="AWSSDK.SecurityToken" Version="3.3.104.4" />
+    <PackageReference Include="Amazon.Lambda.Serialization.SystemTextJson" Version="2.0.1" />
   </ItemGroup>
 </Project>

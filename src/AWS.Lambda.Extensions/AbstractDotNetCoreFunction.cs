@@ -75,7 +75,7 @@ namespace AWS.Lambda.Extensions
 
             host.Start();
             HostServices = host.Services;
-            Logger = ActivatorUtilities.CreateInstance<Logger<AbstractAspNetCoreFunction>>(HostServices);
+            Logger = ActivatorUtilities.CreateInstance<Logger<AbstractDotNetCoreFunction>>(HostServices);
         }
 
 
@@ -174,6 +174,7 @@ namespace AWS.Lambda.Extensions
         /// <param name="request"></param>
         /// <param name="lambdaContext"></param>
         /// <returns></returns>
+        [LambdaSerializer(typeof(Amazon.Lambda.Serialization.SystemTextJson.DefaultLambdaJsonSerializer))]
         public virtual async Task<TResponse> FunctionHandlerAsync(TRequest request, ILambdaContext lambdaContext)
         {
             if (!IsStarted)
@@ -208,6 +209,7 @@ namespace AWS.Lambda.Extensions
         /// <param name="request"></param>
         /// <param name="lambdaContext"></param>
         /// <returns></returns>
+        [LambdaSerializer(typeof(Amazon.Lambda.Serialization.SystemTextJson.DefaultLambdaJsonSerializer))]
         public virtual async Task FunctionHandlerAsync(TRequest request, ILambdaContext lambdaContext)
         {
             if (!IsStarted)
