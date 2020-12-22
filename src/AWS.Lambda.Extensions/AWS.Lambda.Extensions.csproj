@@ -5,7 +5,7 @@
     <AssemblyName>AWS.Lambda.Extensions</AssemblyName>
     <RootNamespace>AWS.Lambda.Extensions</RootNamespace>
     <PackageId>aws-lambda-extensions</PackageId>
-    <Version>1.0.3-alpha</Version>
+    <Version>1.0.6-alpha</Version>
     <Authors>Indika Udagedara (indika.udagedara@gmail.com)</Authors>
     <RepositoryUrl>https://github.com/IndikaUdagedara/dotnet-lambda-extensions</RepositoryUrl>
     <RepositoryType>git</RepositoryType>

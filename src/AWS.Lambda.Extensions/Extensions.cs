@@ -55,10 +55,11 @@ namespace AWS.Lambda.Extensions
 
         internal static void UseLambdaProxy<TRequest, TResponse>(this IApplicationBuilder app)
         {
-            var handler = app.ApplicationServices.GetService<ILambdaFunctionHandler<TRequest, TResponse>>();
             app.Run(async context =>
             {
+                using var scope = app.ApplicationServices.CreateScope();
                 string request;
+                var handler = scope.ServiceProvider.GetService<ILambdaFunctionHandler<TRequest, TResponse>>();
 
                 using (var sr = new StreamReader(context.Request.Body))
                 {
@@ -117,28 +118,31 @@ namespace AWS.Lambda.Extensions
             return hostBuilder;
         }
 
-        internal static void UseLambdaProxy<TRequest>(this IApplicationBuilder app)
+        public static void UseLambdaProxy<TRequest>(this IApplicationBuilder app)
         {
-            var handler = app.ApplicationServices.GetService<ILambdaFunctionHandler<TRequest>>();
             app.Run(async context =>
             {
-                string request;
-
-                using (var sr = new StreamReader(context.Request.Body))
+                using (var scope = app.ApplicationServices.CreateScope())
                 {
-                    request = await sr.ReadToEndAsync();
-                }
+                    var handler = scope.ServiceProvider.GetService<ILambdaFunctionHandler<TRequest>>();
+                    string request;
 
-                context.Response.ContentType = "application/json";
-                if (string.IsNullOrWhiteSpace(request))
-                {
-                    await context.Response.WriteAsync(string.Empty);
-                    return;
-                }
+                    using (var sr = new StreamReader(context.Request.Body))
+                    {
+                        request = await sr.ReadToEndAsync();
+                    }
 
-                await handler.HandleAsync(JsonConvert.DeserializeObject<TRequest>(request));
-                context.Response.StatusCode = StatusCodes.Status200OK;
-                await context.Response.CompleteAsync();
+                    context.Response.ContentType = "application/json";
+                    if (string.IsNullOrWhiteSpace(request))
+                    {
+                        await context.Response.WriteAsync(string.Empty);
+                        return;
+                    }
+
+                    await handler.HandleAsync(JsonConvert.DeserializeObject<TRequest>(request));
+                    context.Response.StatusCode = StatusCodes.Status200OK;
+                    await context.Response.CompleteAsync();
+                }
             });
         }
     }
